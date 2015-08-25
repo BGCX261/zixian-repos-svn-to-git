@@ -1,0 +1,111 @@
+Ref: http://justdevelopment.blogspot.com/2009/10/video-streaming-with-android-phone.html#Creating_Streaming_Media_for_the_Google_Developer_Phone
+
+This page describes how to stream video to the Google Developer Phone. This topic is a very interesting, but also quite complex one, and it took me a while to figure all variables out in a proper way.
+
+If you follow this walkthrough you should be able to install a video streaming server, adapt any of your video content and stream the result to your Android Phone. It also contains encoding settings that you might find useful to encode your videos to watch them (locally)on the G-Phone.
+Hope this is useful to someone out there.
+
+Table of Contents
+Video Streaming with the Google Phone
+Setting up a Streaming Media Server
+Installing Perl
+Installing Darwin Streaming Server
+Installation on Windows
+Installation on Ubuntu Linux
+Administrator Console
+Starting
+Stopping
+Administering Darwin Streaming Server
+Media Repository
+Firewalls and Darwin Streaming Server
+Creating Streaming Media for the Google Developer Phone
+Encoding a Movie
+Getting the Right Dimensions
+Hinting the Result
+Deploying the Media
+Testing the Streaming
+Video Streaming with the Google Phone
+Android comes with the ability to play back video and audio that is stored locally on the device. More important though, Android is also able to receive streaming media such as video and audio with its Media Player API. In this tutorial we show what you need to
+set up a streaming media server
+create streaming media compatible with the Google Phone's available codecs
+Receive the streaming media on the phone
+Setting up a Streaming Media Server
+
+There are a variety of Streaming Media Servers out there, but the one that we think is the easiest to use is Apple's Darwin Streaming Server (DSS). Darwin Streaming Server is Open Source and its commercial brother is Apple's Quicktime Streaming Server (QSS). Darwin can be downloaded from here: http://dss.macosforge.org/. You can click on the previous releases link (http://dss.macosforge.org/post/previous-releases/) if you want to get a binary version and not go to the hassle of building Darwin Yourself. In this Tutorial we used DSS v5.5.
+Installing Perl
+
+Once you downloaded Darwin you need to install it on your machine. This requires that you have Perl installed. A working version of Perl (for Windows) can be found on the Strawberry Perl site: http://strawberryperl.com/. Download the Strawberry Perl and install it. Once you have it installed, open a command line and type the following command:
+> perl -MCPAN -e shell
+
+The CPAN shell opens and there you type:
+
+CPAN> install Win32::Process
+
+This will make Perl go to the Perl package network (the CPAN to be precise) and download the Win32::Process package needed by Darwin. If the downloading has succeeded, you can go on to installing Darwin Streaming Server.
+
+Installing Darwin Streaming Server
+
+Installation on Windows
+
+Unpack the downloaded Darwin to a local folder and execute install.bat. If you are running the install.bat under Windows Vista, make sure you run it in administrator mode. You can do that by right-clicking on the file and select Start as Administrator from the context menu or you can start a command line shell in admin mode by doing the following:
+Press the Start button in your task bar
+type 'cmd' in the search bar
+press Shift+Ctrl+Enter
+This will start the console in administrator mode. You can then browse to the folder containing install.bat and execute it from command line.
+Installation on Ubuntu Linux
+
+Installation on Ubuntu Linux is straight-forward. All you need to do is download the tar.gz file with the binaries (for this tutorial we used Darwin 5.5.5 with the binaries given here: http://dss.macosforge.org/downloads/DarwinStreamingSrvr5.5.5-Linux.tar.gz) to your Linux machine, unzip and untar it e.g. like this:
+
+$> gunzip DarwinStreamingSrvr5.5.5-Linux.tar.gz
+$> tar xf DarwinStreamingSrvr5.5.5-Linux.tar
+
+The result is an untared folder, which contains several executable scripts, one of them being called Install. Before you can execute Install you need to modify the script a bit. Open the script (e.g. with vim) and search for the following part:
+
+useradd -M qtss
+
+Once you have found it, replace it by
+
+useradd -m qtss
+
+Note the lowercase -m option. Safe the file and then from the shell execute
+
+$> ./Install
+
+You might have to be root to be allowed to do that.
+Administrator Console
+
+If the installation of Darwin is successful, you will be prompted for entering a user name and a password. Those are used by the Administrator Console of Darwin and need to be remembered well.
+Starting
+
+The admin console is started right after installation, so if you close the installation window, it will be terminated. To start it again, open a command shell, browse to the installation folder of Darwin (on Windows this is C:\Program Files\Darwin Streaming Server) and type
+
+C:\Program Files\Darwin Streaming Server> perl streamingadminserver.pl
+
+This will start the admin console server and you can access it from your browser under http://localhost:1220.
+Stopping
+
+To stop the admin console simply terminate the Perl script. Note: Terminating the admin server console does not terminate the streaming server. Darwin is installed as a Windows service and as such can only be stopped via the Windows Services view (right-click on My Computer-->Manage-->Services and Applications-->Services).
+Administering Darwin Streaming Server
+
+Via the admin console server you can administer Darwin. The first time you will access the console, you will be asked to enter an MP3 administrator's password. You will be asked for that password whenever you want to upload a new MP3 to Darwin, so remember it well. The admin console is pretty self-explanatory, so take a look around and see what you can do.
+Media Repository
+
+Whatever media you want to stream with Darwin has to be placed inside the Movies folder of your Darwin installation. On Windows, that is C:\Program Files\Darwin Streaming Server\Movies. See the description on Media Creation below, to see what pre-requisites your media has to fulfil.
+Firewalls and Darwin Streaming Server
+
+Darwin is an RTSP server and by default uses the regular RTSP port 554 for RTSP both over TCP and UDP. That port may be blocked by the firewall you installed Darwin on. To make sure the ports are open, you need to open those ports in your firewall. If you don't know how to do it, ask your friendly administrator. 
+
+Important: If you fail to have the proper ports open, you will not receive any streaming on the phone.
+
+Note: In the admin console server, you can choose to enable streaming over port 80, which means that RTSP requests will be tunnelled through port 80 which is usually open in firewalls. For RTSP requests from the phone / external client to your Darwin Streaming Server machine, this means that you have to use an RTSP URL including the port to use, e.g. rtsp://yourserver:80/moviename.mp4.
+Creating Streaming Media for the Google Developer Phone
+
+Creating streaming media depends on two things:
+the streaming server you are using
+the capabilities of the client, i.e. the phone
+In our case, we have decided for the Darwin Streaming Server as streaming server solution and the Android Dev Phone 1 as the client.
+
+Both the capabilities of the server and the phone are important as they decide which media formats will work and which wont.
+
+Darwin Streaming Server supports a variety of containers, among them .3gp, .mp4 and .mov. It is more or less agnostic to the codecs used to encode the media but needs to be hinted how to stream a media file. The Dev Phone on the other hand has specifications that indicate which container types and codecs are supported for which media. A list of specifications can be found here http://developer.android.com/guide/appendix/media-formats.html.
+Essentially this page explains that Android currently supports the following Video Formats:
